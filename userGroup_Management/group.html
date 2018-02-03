@@ -1,0 +1,98 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta charset="utf-8" />
+    <title>Details of Group: {{group.name}}</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <!-- <link rel="stylesheet" href="Assets/css/main.css"> -->
+</head>
+<body>
+    <div id="groupDetails" class="container">
+        <button class="btn btn-primary" onclick="window.location.href='/index.html'">To main list</button> 
+        <button class="btn btn-primary" onclick="window.location.href='/ListOfAllGroups.html'">To group list</button>
+        <div v-if="found">
+                <div class="col-xs-6">
+                    <h1>Group : {{ group.name }}</h1>
+                    <br/>
+                    <table class="table table-hover table-bordered">
+                        <tbody>
+                            <tr>
+                                <td>Group id: </td>
+                                <td>{{ group.id }}</td>
+                            </tr>
+                            <tr>
+                                <td>Group name: </td>
+                                <td>{{ group.name }}</td>
+                            </tr>
+                            <tr>
+                                <td>Group users: </td>
+                                <td>{{ group.users != null ? group.users.map(function(elem){return elem.name;}).join(',') : '-' }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <h3></h3>
+                    <h3></h3>                
+                    
+                </div>
+                <div class="dropdown col-xs-4">
+                    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                        Add group to Parent group 
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1" >
+                        <li v-for="group in groups">
+                            <a v-on:click="addGroupToParent(user.id, group.id)">{{group.name}}</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="dropdown col-xs-4">
+                    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                        Remove group from parent group
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu2" >
+                        <li v-for="group in parents">
+                            <a v-on:click="removeGroupFromParentGroup(user.id, group.id)">{{group.name}}</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="dropdown col-xs-4">
+                        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu3" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                            Add group to Child group 
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenu3" >
+                            <li v-for="group in groups">
+                                <a v-on:click="addUserToGroup(user.id, group.id)">{{group.name}}</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="dropdown col-xs-4">
+                        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu4" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                            Remove group from child group
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenu4" >
+                            <li v-for="group in childrens">
+                                <a v-on:click="removeGroupFromParentGroup(user.id, group.id)">{{group.name}}</a>
+                            </li>
+                        </ul>
+                    </div>
+            </div>
+            <div v-else>
+                <h3>Group not found!</h3>
+            </div>
+            
+            
+        </div>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+        <script src="Assets/js/axios.js"></script>
+        <script src="https://unpkg.com/vue"></script>
+        <script src="Assets/js/app.js" type="text/javascript"></script>
+        <script src="Assets/js/groupDetails.js" type="text/javascript"></script>
+    </body>
+    </html>
+    
