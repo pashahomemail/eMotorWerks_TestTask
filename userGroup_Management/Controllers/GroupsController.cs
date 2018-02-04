@@ -21,6 +21,7 @@ namespace userGroup_Management.Controllers
         public IHttpActionResult getGroupInfo([FromUri]int id)
         {
             var result = new GroupsResponseModel();
+            var forDistinct = new List<GroupModel>();
             var group = context.Groups.FirstOrDefault(f => f.Id == id);
             var userModel = group.Users.Select(s => new UserModel { id = s.Id, name = s.Name }).ToList();
 
@@ -35,12 +36,21 @@ namespace userGroup_Management.Controllers
             var idsParents = context.GroupsRelation.AsNoTracking().Where(w => w.childGroupId == id).Select(s => s.parentGroupId);
             var childrens = mainQuery.Where(w => idsChildrens.Contains(w.Id)).Select(s => new GroupModel { id = s.Id, name = s.Name }).ToList();
             var parents = mainQuery.Where(w => idsParents.Contains(w.Id)).Select(s => new GroupModel { id = s.Id, name = s.Name }).ToList();
+            var freeParents = mainQuery.Where(w => !idsParents.Contains(w.Id) && w.Id != id).Select(s => new GroupModel { id = s.Id, name = s.Name }).ToList();
+            var freeChildrens = mainQuery.Where(w => !idsChildrens.Contains(w.Id) && w.Id != id).Select(s => new GroupModel { id = s.Id, name = s.Name }).ToList();
+            
+            forDistinct.AddRange(freeParents);
+            forDistinct.AddRange(freeChildrens);
+
+            result.free = forDistinct.GroupBy(g => g.id).Select(s => s.First()).Where(w => !childrens.Select(s => s.id).Contains(w.id) && !parents.Select(s => s.id).Contains(w.id)).ToList();
 
             result.childrens = childrens;
             result.id = id;
             result.name = group.Name;
             result.parents = parents;
             result.users = userModel;
+            result.freeParents = freeParents;
+            result.freeChildrens = freeChildrens;
 
             return Ok(result);
         }
@@ -95,7 +105,7 @@ namespace userGroup_Management.Controllers
             {
                 return Content(HttpStatusCode.NotFound, $"Group is not found by id: {id}");
             }
-
+            context.GroupsRelation.Where(w => w.childGroupId == id || w.parentGroupId == id).Delete();
             context.Groups.Remove(group);
             context.SaveChanges();
 
@@ -126,12 +136,12 @@ namespace userGroup_Management.Controllers
         }
 
         [HttpDelete]
-        [Route("{id}/parent")]
-        public IHttpActionResult deleteParentFromGroup([FromUri]int id, DeleteGroupToGroupModel model)
+        [Route("{id}/parent/{parentId}")]
+        public IHttpActionResult deleteParentFromGroup([FromUri]int id, [FromUri]int parentId)
         {
-            var group = context.Groups.FirstOrDefault(f => f.Id == model.id);
-            var ids = context.GroupsRelation.AsNoTracking().Where(w => model.id == w.parentGroupId && w.childGroupId == id).Select(s => s.parentGroupId);
-            context.GroupsRelation.Where(w => ids.Contains(w.parentGroupId)).Delete();
+            var group = context.Groups.FirstOrDefault(f => f.Id == parentId);
+            var ids = context.GroupsRelation.AsNoTracking().Where(w => w.parentGroupId == parentId && w.childGroupId == id).Select(s => s.parentGroupId);
+            context.GroupsRelation.Where(w => ids.Contains(w.parentGroupId) && w.childGroupId == id).Delete();
 
             return Ok();
         }
@@ -160,12 +170,12 @@ namespace userGroup_Management.Controllers
         }
 
         [HttpDelete]
-        [Route("children")]
-        public IHttpActionResult deleteChildrenFromGroup(DeleteGroupToGroupModel model)
+        [Route("{id}/children/{childrenId}")]
+        public IHttpActionResult deleteChildrenFromGroup([FromUri]int id, [FromUri]int childrenId)
         {
-            var group = context.Groups.FirstOrDefault(f => f.Id == model.id);
-            var ids = context.GroupsRelation.AsNoTracking().Where(w => model.toDeleteIds.Contains(w.childGroupId) && w.parentGroupId == model.id).Select(s => s.childGroupId);
-            context.GroupsRelation.Where(w => ids.Contains(w.childGroupId)).Delete();
+            var group = context.Groups.FirstOrDefault(f => f.Id == id);
+            var ids = context.GroupsRelation.AsNoTracking().Where(w => w.childGroupId == childrenId && w.parentGroupId == id).Select(s => s.childGroupId);
+            context.GroupsRelation.Where(w => ids.Contains(w.childGroupId) && w.parentGroupId == id).Delete();
 
             return Ok();
         }

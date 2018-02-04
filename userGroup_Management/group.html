@@ -29,6 +29,14 @@
                                 <td>Group users: </td>
                                 <td>{{ group.users != null ? group.users.map(function(elem){return elem.name;}).join(',') : '-' }}</td>
                             </tr>
+                            <tr>
+                                <td>Parents: </td>
+                                <td>{{ group.parents != null ? group.parents.map(function(elem){return elem.name;}).join(',') : '-' }}</td>
+                            </tr>
+                            <tr>
+                                <td>Childrens: </td>
+                                <td>{{ group.childrens != null ? group.childrens.map(function(elem){return elem.name;}).join(',') : '-' }}</td>
+                            </tr>
                         </tbody>
                     </table>
                     
@@ -42,8 +50,8 @@
                         <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu" aria-labelledby="dropdownMenu1" >
-                        <li v-for="group in groups">
-                            <a v-on:click="addGroupToParent(user.id, group.id)">{{group.name}}</a>
+                        <li v-for="parent in freeParents">
+                            <a v-on:click="addGroupToParent(group.id, parent.id)">{{ parent.name }}</a>
                         </li>
                     </ul>
                 </div>
@@ -53,30 +61,30 @@
                         <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu" aria-labelledby="dropdownMenu2" >
-                        <li v-for="group in parents">
-                            <a v-on:click="removeGroupFromParentGroup(user.id, group.id)">{{group.name}}</a>
+                        <li v-for="parent in parents">
+                            <a v-on:click="removeGroupFromParentGroup(group.id, parent.id)">{{ parent.name }}</a>
                         </li>
                     </ul>
                 </div>
                 <div class="dropdown col-xs-4">
                         <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu3" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                            Add group to Child group 
+                            Add children for this group 
                             <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenu3" >
-                            <li v-for="group in groups">
-                                <a v-on:click="addUserToGroup(user.id, group.id)">{{group.name}}</a>
+                            <li v-for="child in freeChildrens">
+                                <a v-on:click="addGroupToChildren(group.id, child.id)">{{ child.name }}</a>
                             </li>
                         </ul>
                     </div>
                     <div class="dropdown col-xs-4">
                         <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu4" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                            Remove group from child group
+                            Remove children from this group
                             <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenu4" >
-                            <li v-for="group in childrens">
-                                <a v-on:click="removeGroupFromParentGroup(user.id, group.id)">{{group.name}}</a>
+                            <li v-for="child in childrens">
+                                <a v-on:click="removeGroupFromChildrenGroup(group.id, child.id)">{{ child.name }}</a>
                             </li>
                         </ul>
                     </div>

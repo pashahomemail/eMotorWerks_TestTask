@@ -13,5 +13,8 @@ namespace userGroup_Management.Models
         public ICollection<UserModel> users { get; set; }
         public ICollection<GroupModel> parents { get; set; }
         public ICollection<GroupModel> childrens { get; set; }
+        public ICollection<GroupModel> freeParents { get; set; }
+        public ICollection<GroupModel> freeChildrens { get; set; }
+        public ICollection<GroupModel> free { get; set; }
     }
 }

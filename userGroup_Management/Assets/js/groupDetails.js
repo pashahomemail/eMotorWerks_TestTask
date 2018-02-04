@@ -17,8 +17,11 @@ var groupDetails = new Vue({
             id: 0,
             name: ''
         },
-        parents:null,
-        childrens:null,
+        parents: null,
+        childrens: null,
+        freeParents: null,
+        freeChildrens: null,
+        free:null,
         error: null,
     },
     created(){
@@ -33,7 +36,10 @@ var groupDetails = new Vue({
                 that.found = true;
                 that.group = response.data; 
                 that.parents = that.group.parents;
-                that.childrens = that.group.childrens;                               
+                that.childrens = that.group.childrens;   
+                that.freeParents = that.group.freeParents;
+                that.freeChildrens = that.group.freeChildrens; 
+                that.free = that.group.free;
             },function(error){
                 that.error = error;
                 that.found = false;
@@ -41,25 +47,35 @@ var groupDetails = new Vue({
         },
         addGroupToParent(groupId, parentId){
             var that = this;
-            axiosInstance.post("group/parent", {childrenId:userId, parentId:parentId}).then(function(response){
+            axiosInstance.post("groups/parent", {childrenId:groupId, parentId:parentId}).then(function(response){
                 that.fetchData();                                
             },function(error){
                 that.fetchData();
             });
         },
-        removeGroupFromParentGroup(userId, groupId){
+        removeGroupFromParentGroup(groupId, parentId){
             var that = this;
-            axiosInstance.delete("group/parent", {childrenId:userId, parentId:parentId}).then(function(response){
+            axiosInstance.delete("groups/" + groupId + "/parent/" + parentId).then(function(response){
                 that.fetchData();                                
             },function(error){
                 that.fetchData();
             });
         },
-        addGroupToChildren(){
-
+        addGroupToChildren(groupId, parentId){
+            var that = this;
+            axiosInstance.post("groups/children", {childrenId:parentId, parentId:groupId}).then(function(response){
+                that.fetchData();                                
+            },function(error){
+                that.fetchData();
+            });
         },
-        removeGroupFromChildrenGroup(){
-
+        removeGroupFromChildrenGroup(groupId, childrenId){
+            var that = this;
+            axiosInstance.delete("groups/" + groupId + "/children/" + childrenId).then(function(response){
+                that.fetchData();                                
+            },function(error){
+                that.fetchData();
+            });
         }
     }
 });
